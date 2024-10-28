@@ -1,1 +1,4 @@
 /config.json
+logfile*
+__pycache__/
+*.pyc
