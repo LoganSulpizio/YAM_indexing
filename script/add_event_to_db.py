@@ -211,7 +211,9 @@ def add_events_to_db(db_path, from_block, to_block, decoded_logs: List[Dict], wr
     conn.close()
 
     write_log(f"{len(decoded_logs)} event(s) written to DB", 'logfile/logfile_indexingYAM.txt')
-    
+
+
+### Test case ###
 if __name__ == "__main__":
     from web3 import Web3
     from pprint import pprint

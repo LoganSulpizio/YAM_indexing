@@ -180,6 +180,8 @@ def get_generic_data_logs(log):
 def hex_to_decimal(hex_str):
     return int(hex_str, 16)
 
+
+### Test case ###
 if __name__ == "__main__":
     from web3 import Web3
     from pprint import pprint

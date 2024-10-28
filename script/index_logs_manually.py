@@ -72,8 +72,8 @@ if __name__ == "__main__":
     w3 = Web3(Web3.HTTPProvider('https://go.getblock.io/a3dacad4a2e542aca148ed133b3a76b8'))
     contract_address = contract_data['YAM']['address'] 
     
-    from_block = 36697301
-    to_block_end = 36723643
+    from_block = 36723601
+    to_block_end = 36739727
     blocks_per_request = 100
 
     #from_block = 36676377

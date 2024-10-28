@@ -16,7 +16,7 @@ def export_logs_to_bot(decoded_logs: list, export_path: str):
 
 
 
-
+### Test case ###
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))

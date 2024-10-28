@@ -23,6 +23,7 @@ def update_status_of_offers_table_by_offer_id(cursor: sqlite3.Cursor, offer_id: 
         # Execute the query to update the status in the offers table
         cursor.execute(update_query, (status, offer_id))
 
+### Test case ###
 if __name__ == "__main__":
     
     db_path = "D:\DeFi\YAM_indexing\YAM.db"
