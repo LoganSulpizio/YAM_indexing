@@ -25,11 +25,16 @@ def get_all_events_from_offer_id(cursor: sqlite3.Cursor, offer_id: int) -> List[
         for event in events:
             result.append(dict(zip([column[0] for column in cursor.description], event)))
 
+        result = sorted(result, key=lambda event: (event['block_number'], event['log_index']))
+
     return result
 
 def get_offer_status(cursor: sqlite3.Cursor, offer_id: int) -> str:
     
     events = get_all_events_from_offer_id(cursor, offer_id)
+
+    if len(events) > 0 and events[-1].get('event_type', None) == 'OfferDeleted':
+        return 'Deleted'
 
     # Iterate over the events list
     last_offer_updated_index = None
@@ -62,7 +67,7 @@ def get_offer_status(cursor: sqlite3.Cursor, offer_id: int) -> str:
 
 
 
-
+### Test case ###
 if __name__ == "__main__":
     from pprint import pprint
     # Connect to the SQLite database (it will create the database file if it doesn't exist)
@@ -71,6 +76,6 @@ if __name__ == "__main__":
     # Create a cursor object to execute SQL queries
     cursor = conn.cursor()
 
-    status = get_offer_status(cursor, 56882)
+    status = get_offer_status(cursor, 38027)
 
     print(status)
