@@ -6,6 +6,7 @@ from script.get_and_decode_logs_YAM import get_log_YAM_https, decode_logs_YAM
 from script.export_logs import export_logs_to_bot
 from script.add_event_to_db import add_events_to_db
 from script.index_logs_manually import index_manually
+from script.sync_db_with_latest_block import sync_db_with_latest_block
 from script.Utilities.contract_data import contract_data
 from script.Utilities.write_logs import write_log
 from script.Utilities.handle_exception import handle_keyboard_exception, handle_exception
@@ -29,16 +30,20 @@ def main():
     w3_main = 0
     w3_backup = 1
 
-    print('running YAM indexing...')
-    write_log("index YAM started", 'logfile/logfile_indexingYAM.txt')
+    sync_counter = unsuccessful_request_counter  = counter_backup = 0
 
+    # first sync with 50 blocks per request
+    current_block_number = w3[0].eth.block_number
+    sync_db_with_latest_block(db_path, current_block_number, 50, w3[0])
+
+    # second sync with 1 block per request for that last few blocks
     current_block_number = w3[0].eth.block_number
     from_block = current_block_number - BLOCK_BUFFER - BLOCK_TO_RETRIEVE + 1
     to_block = current_block_number - BLOCK_BUFFER
+    sync_db_with_latest_block(db_path, current_block_number, 1, w3[0])
 
-    sync_counter = unsuccessful_request_counter  = counter_backup = 0
-
-    index_manually(w3[0], contract_data['YAM']['address'], from_block-20, from_block-1, 5, db_path)
+    print('running YAM indexing...')
+    write_log("index YAM started", 'logfile/logfile_indexingYAM.txt')
 
     while True:
 
