@@ -11,11 +11,15 @@ def get_indexing_state(db_path = "YAM.db"):
     # Fetch all rows
     rows = cursor.fetchall()
 
+    output_message = ''
+
     for row in rows:
-        print(row)
+        output_message += f"{row}\n"
     
     # Close the connection
     conn.close()
+
+    print(output_message)
 
 if __name__ == "__main__":
     get_indexing_state()
