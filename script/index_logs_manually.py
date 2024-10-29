@@ -1,9 +1,9 @@
 import os
 import traceback
 import time
+import sys
 from requests.exceptions import HTTPError
 if __name__ == '__main__':
-    import sys
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from script.Utilities.write_logs import write_log
@@ -30,14 +30,14 @@ def index_manually(w3, contract_address, from_block, to_block_end, blocks_per_re
             from_block += blocks_per_request
             to_block += blocks_per_request
 
-            time.sleep(0.022)
-
             if to_block > to_block_end:
                 log_message = f"{to_block - blocks_per_request - from_block_initial + 1} blocks retrieved: from block {from_block_initial} to block {to_block - blocks_per_request} ({round((to_block - blocks_per_request - from_block_initial + 1)*5/86400, 1)} days)"
                 write_log(log_message, 'logfile/logfile_indexingYAM.txt')
                 if __name__ == "__main__":
                     print(log_message)
                 break
+
+            time.sleep(0.022)
 
         except HTTPError as e:
             if e.response.status_code == 503:
@@ -72,9 +72,9 @@ if __name__ == "__main__":
     w3 = Web3(Web3.HTTPProvider('https://go.getblock.io/a3dacad4a2e542aca148ed133b3a76b8'))
     contract_address = contract_data['YAM']['address'] 
     
-    from_block = 36723601
-    to_block_end = 36739727
-    blocks_per_request = 100
+    from_block = 36747958
+    to_block_end = 36747966
+    blocks_per_request = 5
 
     #from_block = 36676377
     #to_block_end = 36676377
