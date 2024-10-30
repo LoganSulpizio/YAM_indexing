@@ -19,7 +19,7 @@ def get_indexing_state(db_path = "YAM.db"):
     # Close the connection
     conn.close()
 
-    print(output_message)
+    print(str(output_message))
 
 if __name__ == "__main__":
     get_indexing_state()
