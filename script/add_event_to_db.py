@@ -181,8 +181,14 @@ def add_events_to_db(db_path, from_block, to_block, decoded_logs: List[Dict], wr
     ### indexing_state ###
     cursor.execute("SELECT * FROM indexing_state ORDER BY indexing_id DESC LIMIT 1")
     most_recent_entry = cursor.fetchone()
+
+    extend_most_recent_entry = False
+
+    if most_recent_entry is not None:
+        if most_recent_entry[1] <= from_block <= most_recent_entry[2] + 1 and to_block > most_recent_entry[2]:
+            extend_most_recent_entry = True
     
-    if  most_recent_entry is not None and most_recent_entry[2] == from_block - 1:
+    if  extend_most_recent_entry:
 
         # SQL query to update the related row in the indexing_state table
         update_query = """
@@ -194,7 +200,7 @@ def add_events_to_db(db_path, from_block, to_block, decoded_logs: List[Dict], wr
         # Execute the query to update the indexing state
         cursor.execute(update_query, (to_block, most_recent_entry[0]))
 
-    else:
+    elif to_block > most_recent_entry[2] :
 
         # Insert the new entry into indexing_status
         cursor.execute("""
