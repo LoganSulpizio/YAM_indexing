@@ -1,6 +1,6 @@
 import sqlite3
 
-def get_indexing_state(db_path = "YAM.db"):
+def get_indexing_state(db_path = "YAM.db", print_output = False):
     # Connect to the SQLite database
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
@@ -19,7 +19,10 @@ def get_indexing_state(db_path = "YAM.db"):
     # Close the connection
     conn.close()
 
-    print(str(output_message))
+    if print_output:
+        print(str(output_message))
+    else:
+        return rows
 
 if __name__ == "__main__":
-    get_indexing_state()
+    get_indexing_state(print_output = True)
