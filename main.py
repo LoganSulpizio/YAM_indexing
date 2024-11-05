@@ -65,7 +65,7 @@ def main():
             export_logs_to_bot(decoded_logs, path_export_logs)
 
             ### Add logs to the DB
-            add_events_to_db(db_path, from_block, to_block, decoded_logs)
+            add_events_to_db(db_path, from_block, to_block, decoded_logs, True)
             
 
             from_block += BLOCK_TO_RETRIEVE
