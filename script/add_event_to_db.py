@@ -53,7 +53,7 @@ def add_events_to_db(db_path, from_block, to_block, decoded_logs: List[Dict], wr
             unique_id = f"{log['transactionHash']}_{log['logIndex']}"
 
             insert_query = """
-                INSERT INTO offer_events (offer_id, event_type, buyer_address, amount_bought, transaction_hash, block_number, log_index, unique_id
+                INSERT INTO offer_events (offer_id, event_type, buyer_address, amount_bought, price_bought, transaction_hash, block_number, log_index, unique_id
             """
             
             # Add event_timestamp if write_timestamp is True
@@ -61,7 +61,7 @@ def add_events_to_db(db_path, from_block, to_block, decoded_logs: List[Dict], wr
                 insert_query += ", event_timestamp"
             
             # Complete the query
-            insert_query += ") VALUES (?, ?, ?, ?, ?, ?, ?, ?"
+            insert_query += ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?"
             
             # Add a placeholder for CURRENT_TIMESTAMP if write_timestamp is True
             if write_timestamp:
@@ -71,7 +71,7 @@ def add_events_to_db(db_path, from_block, to_block, decoded_logs: List[Dict], wr
             insert_query += ")"
             
             try:
-                cursor.execute(insert_query, (log['offerId'], log['topic'], log['buyer'], str(log['amount']), log['transactionHash'], log['blockNumber'], log['logIndex'], unique_id))
+                cursor.execute(insert_query, (log['offerId'], log['topic'], log['buyer'], str(log['amount']), str(log['price']),log['transactionHash'], log['blockNumber'], log['logIndex'], unique_id))
             except sqlite3.IntegrityError as e:
                 if 'UNIQUE constraint failed: offer_events.unique_id' in str(e):
                     pass
@@ -231,8 +231,8 @@ if __name__ == "__main__":
     w3 = Web3(Web3.HTTPProvider('https://gnosis-mainnet.blastapi.io/9330add1-83d0-4f95-b445-326506a5d029'))
     #w3 = Web3(Web3.HTTPProvider('https://nd-684-905-991.p2pify.com/3aa16c5117029835a16cdd2534cfe4a9'))
     contract_address = contract_data['YAM']['address']  # Replace with your contract address
-    from_block = 36000000  # You can specify the starting block number
-    to_block = 36000100  # 'latest' to get up to the most recent block
+    from_block = 36890674  # You can specify the starting block number
+    to_block = 36890674  # 'latest' to get up to the most recent block
     logs = get_log_YAM_https(w3, contract_address, from_block, to_block)
     logs2 = get_log_YAM_https(w3, contract_address, from_block, to_block)
     decoded_logs = decode_logs_YAM(logs+logs2)
