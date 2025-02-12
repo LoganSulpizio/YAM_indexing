@@ -115,8 +115,8 @@ def main():
 
 
             if unsuccessful_request_counter > 6:
-                write_log(f"request to w3 [{w3_main}] failed {unsuccessful_request_counter} times: w3_main set to 2", 'logfile/logfile_indexingYAM.txt')
                 w3_main = (w3_main + 1) % 3
+                write_log(f"request to w3 [{w3_main}] failed {unsuccessful_request_counter} times: w3_main set to {w3_main}", 'logfile/logfile_indexingYAM.txt')
 
             if isinstance(e, ValueError):
                 # Attempt to extract the error code from the exception message
