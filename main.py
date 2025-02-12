@@ -28,7 +28,7 @@ def main():
     TIME_TO_WAIT_BEFORE_RETRY = config['TIME_TO_WAIT_BEFORE_RETRY'] # time to wait before retry when RPC is not available
 
     w3_main = 0
-    w3_backup = 1
+    #w3_backup = 1
 
     sync_counter = unsuccessful_request_counter  = counter_backup = 0
 
@@ -54,12 +54,16 @@ def main():
             unsuccessful_request_counter += 1
 
             logs = get_log_YAM_https(w3[w3_main], contract_data['YAM']['address'], from_block, to_block)
-            logs_backup = get_log_YAM_https(w3[w3_backup], contract_data['YAM']['address'], from_block, to_block, True)
+            #logs_backup = get_log_YAM_https(w3[w3_backup], contract_data['YAM']['address'], from_block, to_block, True)
 
             unsuccessful_request_counter = 0
+            if w3_main > 0:
+                counter_backup += 1
+            if counter_backup > 400:
+                w3_main = 0
+                counter_backup = 0
 
-
-            decoded_logs = decode_logs_YAM(logs + logs_backup)
+            decoded_logs = decode_logs_YAM(logs)#decode_logs_YAM(logs + logs_backup)
 
             ### export logs to bot ###
             export_logs_to_bot(decoded_logs, path_export_logs)
@@ -85,13 +89,13 @@ def main():
                     from_block = current_block_number - BLOCK_BUFFER - BLOCK_TO_RETRIEVE + 1
                 write_log(f"resync on newest block - deviation was {deviation} block(s)", 'logfile/logfile_indexingYAM.txt')
 
-            if w3_main == 2:
-                counter_backup += 1
-                if counter_backup > 500:
-                    write_log("counter_backup > 500: w3_main set to 0", 'logfile/logfile_indexingYAM.txt')
-                    w3_main = 0
-                    w3_backup = 1
-                    counter_backup = 0
+            #if w3_main == 2:
+            #    counter_backup += 1
+            #    if counter_backup > 500:
+            #        write_log("counter_backup > 500: w3_main set to 0", 'logfile/logfile_indexingYAM.txt')
+            #        w3_main = 0
+            #        w3_backup = 1
+            #        counter_backup = 0
 
             execution_time = time.time() - start_time
 
@@ -111,9 +115,8 @@ def main():
 
 
             if unsuccessful_request_counter > 6:
-                write_log(f"request to w3 [0] or [1] failed {unsuccessful_request_counter} times: w3_main set to 2", 'logfile/logfile_indexingYAM.txt')
-                w3_main = 2
-                w3_backup = 3
+                write_log(f"request to w3 [{w3_main}] failed {unsuccessful_request_counter} times: w3_main set to 2", 'logfile/logfile_indexingYAM.txt')
+                w3_main = (w3_main + 1) % 3
 
             if isinstance(e, ValueError):
                 # Attempt to extract the error code from the exception message
