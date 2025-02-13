@@ -17,7 +17,7 @@ def main():
     with open('config.json', 'r', encoding='utf-8') as file:
         config = json.load(file)
 
-    w3 = [Web3(Web3.HTTPProvider(config[f'w3_url{i}'])) for i in range(1, 5)]
+    w3 = [Web3(Web3.HTTPProvider(config[f'w3_url{i}'])) for i in range(1, 6)]
 
     db_path = config['db_path']
     path_export_logs = config['path_export_logs']
@@ -28,7 +28,7 @@ def main():
     TIME_TO_WAIT_BEFORE_RETRY = config['TIME_TO_WAIT_BEFORE_RETRY'] # time to wait before retry when RPC is not available
 
     w3_main = 0
-    #w3_backup = 1
+    w3_backup = 4
 
     sync_counter = unsuccessful_request_counter  = counter_backup = 0
 
@@ -54,7 +54,10 @@ def main():
             unsuccessful_request_counter += 1
 
             logs = get_log_YAM_https(w3[w3_main], contract_data['YAM']['address'], from_block, to_block)
-            #logs_backup = get_log_YAM_https(w3[w3_backup], contract_data['YAM']['address'], from_block, to_block, True)
+            if w3_main == 0:
+                logs_backup = get_log_YAM_https(w3[w3_backup], contract_data['YAM']['address'], from_block, to_block, True)
+            else:
+                logs_backup = get_log_YAM_https(w3[w3_backup], contract_data['YAM']['address'], from_block, to_block, True)#[]
 
             unsuccessful_request_counter = 0
             if w3_main > 0:
@@ -62,8 +65,9 @@ def main():
             if counter_backup > 400:
                 w3_main = 0
                 counter_backup = 0
+                write_log(f"counter_backup > 400 - w3_main set to 0", 'logfile/logfile_indexingYAM.txt')
 
-            decoded_logs = decode_logs_YAM(logs)#decode_logs_YAM(logs + logs_backup)
+            decoded_logs = decode_logs_YAM(logs + logs_backup)
 
             ### export logs to bot ###
             export_logs_to_bot(decoded_logs, path_export_logs)
@@ -128,6 +132,9 @@ def main():
                 except (SyntaxError, NameError, TypeError):
                     # If the eval fails, just proceed with handling the exception normally
                     handle_exception(e, 'Error: indexing YAM script failed', 'logfile/logfile_indexingYAM.txt', send_telegram_bool = True)
+
+            time.sleep(TIME_TO_WAIT_BEFORE_RETRY/2)
+            write_log(f"Error: {e}", "logfile/logfile_indexingYAM.txt")
 
 if __name__ == "__main__":
     main()
