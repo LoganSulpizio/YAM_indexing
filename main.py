@@ -57,7 +57,7 @@ def main():
             if w3_main == 0:
                 logs_backup = get_log_YAM_https(w3[w3_backup], contract_data['YAM']['address'], from_block, to_block, True)
             else:
-                logs_backup = get_log_YAM_https(w3[w3_backup], contract_data['YAM']['address'], from_block, to_block, True)#[]
+                logs_backup = []
 
             unsuccessful_request_counter = 0
             if w3_main > 0:
